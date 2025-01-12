@@ -1,82 +1,24 @@
-const words = [
-    {
-        character: '你好',
-        pinyin: 'nǐ hǎo',
-        meaning: 'Hello',
-        example: '你好，早上好！(Hello, good morning!)',
-        audio: 'nihao.mp3' // You'll need to add actual audio files
-    },
-    {
-        character: '谢谢',
-        pinyin: 'xiè xiè',
-        meaning: 'Thank you',
-        example: '谢谢你的帮助！(Thank you for your help!)',
-        audio: 'xiexie.mp3'
-    },
-    {
-        character: '随便',
-        pinyin: 'suí biàn',
-        meaning: 'As you wish / Whatever / Casual',
-        example: '你想吃什么？随便。(What do you want to eat? Whatever is fine.)',
-        audio: 'suibian.mp3'
-    },
-    {
-        character: '加油',
-        pinyin: 'jiā yóu',
-        meaning: 'Keep going! / Come on! / Good luck!',
-        example: '考试加油！(Good luck with your exam!)',
-        audio: 'jiayou.mp3'
-    },
-    {
-        character: '马马虎虎',
-        pinyin: 'mǎ ma hū hu',
-        meaning: 'So-so / Careless',
-        example: '你的中文怎么样？马马虎虎。(How\'s your Chinese? So-so.)',
-        audio: 'mamahu.mp3'
-    },
-    {
-        character: '不好意思',
-        pinyin: 'bù hǎo yì si',
-        meaning: 'Sorry / Embarrassed',
-        example: '不好意思，我迟到了。(Sorry, I\'m late.)',
-        audio: 'buhaoyisi.mp3'
-    },
-    {
-        character: '受不了',
-        pinyin: 'shòu bù liǎo',
-        meaning: 'Can\'t stand it / Can\'t take it anymore',
-        example: '我受不了这么热的天气！(I can\'t stand such hot weather!)',
-        audio: 'shoubulia.mp3'
-    },
-    {
-        character: '讲究',
-        pinyin: 'jiǎng jiu',
-        meaning: 'Particular about / Pay attention to detail',
-        example: '他很讲究穿着。(He\'s very particular about his clothes.)',
-        audio: 'jiangjiu.mp3'
-    },
-    {
-        character: '半途而废',
-        pinyin: 'bàn tú ér fèi',
-        meaning: 'To give up halfway / Leave something unfinished',
-        example: '学习不能半途而废。(Don\'t give up studying halfway.)',
-        audio: 'bantuerfei.mp3'
-    },
-    {
-        character: '入乡随俗',
-        pinyin: 'rù xiāng suí sú',
-        meaning: 'When in Rome, do as the Romans do',
-        example: '到了新国家要入乡随俗。(When in a new country, follow local customs.)',
-        audio: 'ruxiangsuisu.mp3'
-    }
-];
+import words from './data/words.js';
 
 let currentWordIndex = 0;
 let isMeaningShown = false;
 let isPlaying = false;
 
 document.addEventListener('DOMContentLoaded', () => {
+    const startScreen = document.getElementById('start-screen');
+    const startBtn = document.getElementById('start-btn');
     const card = document.querySelector('.card');
+
+    // Initially hide the card
+    card.classList.add('hidden');
+
+    // Start button click handler
+    startBtn.addEventListener('click', () => {
+        startScreen.classList.add('hidden');
+        card.classList.remove('hidden');
+        showWord(); // Show the first word
+    });
+
     let startX = 0;
     let currentX = 0;
     let isDragging = false;
@@ -131,12 +73,34 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function showWord() {
     const card = document.querySelector('.card');
-    const meaning = card.querySelector('.meaning');
-    const character = card.querySelector('.character');
+    const currentWord = words[currentWordIndex];
     
-    character.textContent = words[currentWordIndex].character;
-    meaning.classList.add('hidden');
-    isMeaningShown = false;
+    card.innerHTML = `
+        <div class="character">${currentWord.character}</div>
+        <div class="pinyin">${currentWord.pinyin}</div>
+        <button class="sound-btn"></button>
+        <div class="meaning hidden">
+            <h3>${currentWord.meaning}</h3>
+            <p>${currentWord.example}</p>
+        </div>
+    `;
+
+    // Reattach sound button listener
+    const soundBtn = card.querySelector('.sound-btn');
+    soundBtn.addEventListener('click', () => {
+        if (isPlaying) return;
+        
+        isPlaying = true;
+        const text = currentWord.character;
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'zh-CN';
+        
+        utterance.onend = () => {
+            isPlaying = false;
+        };
+        
+        window.speechSynthesis.speak(utterance);
+    });
 }
 
 function showMeaning() {
@@ -149,7 +113,6 @@ function showMeaning() {
     isMeaningShown = true;
 }
 
-// TODO: Implement sound functionality
 document.querySelector('.sound-btn').addEventListener('click', () => {
     if (isPlaying) return;
     
