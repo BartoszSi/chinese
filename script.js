@@ -76,64 +76,57 @@ let isMeaningShown = false;
 let isPlaying = false;
 
 document.addEventListener('DOMContentLoaded', () => {
-    const startBtn = document.getElementById('start-btn');
-    const startScreen = document.getElementById('start-screen');
-    const practiceScreen = document.getElementById('practice-screen');
     const card = document.querySelector('.card');
+    let startX = 0;
+    let currentX = 0;
+    let isDragging = false;
 
-    startBtn.addEventListener('click', () => {
-        startScreen.classList.add('hidden');
-        practiceScreen.classList.remove('hidden');
-        showWord();
+    // Disable default touch behaviors
+    document.body.addEventListener('touchmove', (e) => {
+        if (isDragging) e.preventDefault();
+    }, { passive: false });
+
+    // Touch events for card
+    card.addEventListener('touchstart', (e) => {
+        isDragging = true;
+        startX = e.touches[0].clientX;
+        card.style.transition = 'none';
+    }, { passive: true });
+
+    card.addEventListener('touchmove', (e) => {
+        if (!isDragging) return;
+        
+        currentX = e.touches[0].clientX - startX;
+        const rotation = currentX / 20; // Subtle rotation while dragging
+        
+        card.style.transform = `translateX(${currentX}px) rotate(${rotation}deg)`;
+        card.style.opacity = (1 - Math.abs(currentX) / 500).toString();
     });
 
-    // Handle swipe and mouse events
-    let touchstartX = 0;
-    let touchendX = 0;
-    let mouseStartX = 0;
-    let mouseEndX = 0;
-    let isMouseDown = false;
+    card.addEventListener('touchend', () => {
+        isDragging = false;
+        card.style.transition = 'transform 0.3s ease, opacity 0.3s ease';
 
-    card.addEventListener('touchstart', e => {
-        touchstartX = e.changedTouches[0].screenX;
-    });
-
-    card.addEventListener('touchend', e => {
-        touchendX = e.changedTouches[0].screenX;
-        handleSwipe(touchstartX, touchendX);
-    });
-
-    // Add mouse events
-    card.addEventListener('mousedown', e => {
-        isMouseDown = true;
-        mouseStartX = e.screenX;
-    });
-
-    card.addEventListener('mousemove', e => {
-        if (isMouseDown) {
-            mouseEndX = e.screenX;
-        }
-    });
-
-    card.addEventListener('mouseup', () => {
-        if (isMouseDown) {
-            handleSwipe(mouseStartX, mouseEndX);
-            isMouseDown = false;
-        }
-    });
-
-    // Update handleSwipe to accept parameters
-    function handleSwipe(startX, endX) {
-        if (endX < startX) { // Swipe left
-            if (isMeaningShown) {
+        if (Math.abs(currentX) > 100) { // Swipe threshold
+            // Swipe animation
+            card.style.transform = `translateX(${currentX < 0 ? -1000 : 1000}px) rotate(${currentX < 0 ? -30 : 30}deg)`;
+            card.style.opacity = '0';
+            
+            // After animation, reset and show next card
+            setTimeout(() => {
+                card.style.transform = 'none';
+                card.style.opacity = '1';
                 currentWordIndex = (currentWordIndex + 1) % words.length;
-                isMeaningShown = false;
                 showWord();
-            } else {
-                showMeaning();
-            }
+            }, 300);
+        } else {
+            // Reset card position if not swiped enough
+            card.style.transform = 'none';
+            card.style.opacity = '1';
         }
-    }
+        
+        currentX = 0;
+    });
 });
 
 function showWord() {
