@@ -1,0 +1,130 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: Arial, sans-serif;
+    background-color: #f0f0f0;
+}
+
+.container {
+    width: 100%;
+    max-width: 400px;
+    min-height: 100vh;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+#start-screen {
+    text-align: center;
+    padding: 20px;
+}
+
+#start-btn {
+    padding: 15px 30px;
+    font-size: 18px;
+    border: none;
+    border-radius: 25px;
+    background: #007AFF;
+    color: white;
+    cursor: pointer;
+}
+
+.hidden {
+    display: none;
+}
+
+.card {
+    background: white;
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    margin: 20px auto;
+    min-height: 60vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+
+.character {
+    font-size: 48px;
+    margin-bottom: 20px;
+}
+
+.sound-btn {
+    position: absolute;
+    bottom: 30px;
+    width: 60px;
+    height: 60px;
+    border: none;
+    border-radius: 50%;
+    background: #007AFF;
+    color: white;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 4px 12px rgba(0, 122, 255, 0.3);
+    transition: all 0.2s ease;
+}
+
+.sound-btn:active {
+    transform: scale(0.95);
+    box-shadow: 0 2px 6px rgba(0, 122, 255, 0.2);
+}
+
+/* Add this to your HTML for the speaker icon */
+.sound-btn::before {
+    content: "🔊";
+    font-size: 24px;
+}
+
+.meaning {
+    text-align: center;
+    padding: 20px;
+}
+
+.meaning h3 {
+    font-size: 1.5em;
+    margin-bottom: 10px;
+}
+
+.meaning p {
+    color: #666;
+    line-height: 1.4;
+}
+
+/* Media query for portrait mode */
+@media screen and (orientation: portrait) {
+    .container {
+        padding: 10px;
+    }
+    
+    .card {
+        min-height: 70vh;
+        margin: 10px auto;
+    }
+    
+    .character {
+        font-size: 72px;
+    }
+    
+    .sound-btn {
+        width: 70px;
+        height: 70px;
+    }
+    
+    .sound-btn::before {
+        font-size: 28px;
+    }
+} 
